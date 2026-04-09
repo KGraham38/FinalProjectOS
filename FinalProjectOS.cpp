@@ -11,7 +11,7 @@
 using namespace std;
 
 void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int& pageFaults);
-void printResults();
+void printResults(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int pageFaults);
 
 int main()
 {
@@ -161,6 +161,9 @@ int main()
         {
             //Run my FIFO Algorithm
             runFifoAlgorithm(referenceString, numOfReferences, numFrames, outputTable, pageFaults);
+            //Print Results
+            printResults(referenceString, numOfReferences, numFrames, outputTable, pageFaults);
+
         }
 
         if (algorithm == 'O' || algorithm == 'o')
@@ -170,8 +173,7 @@ int main()
 
         cout << endl;
 
-        //Print Results
-        printResults()
+        
 
         cout << "Repeat, Y or N? :";
         cin >> repeat;
@@ -258,7 +260,32 @@ void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames,
     //Seperator is a number of dashes corresponding to the length of the input string, looks like about 6x dashes per num of input string values
     //Just one space to the right of each string value
 
-void printResults()
+void printResults(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int pageFaults)
 {
+    cout << endl;
+
+    //Print the reference string across the top
+    for (int i = 0; i < numOfReferences; i++)
+    {
+        cout << setw(3) << referenceString[i];
+
+    }
+    cout << endl;
+
+    //Separator line
+    for (int i = 0; i < numOfReferences; i++)
+    {
+        cout << "_____";
+    }
+    cout << endl;
+
+    //Print our resultant frame table
+
+
+    //Print number of page faults
+    cout << endl;
+    cout << "Number of Page Faults: " << pageFaults;
+    cout << endl;
+
 
 }
