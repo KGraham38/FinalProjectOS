@@ -10,6 +10,9 @@
 
 using namespace std;
 
+void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int pageFaults);
+
+
 int main()
 {
     //Step 1: Read/parse text from file; Argument1 (first letter either F, O, or L) = replacement algorithm, Argument2 = number of memory frames (second char in file must be an int), and Argument3= the reference string(comma seperated)
@@ -141,9 +144,22 @@ int main()
 
         cout << endl;
 
+        //Shared result data table
+        int outputTable[1000][1000];
+        int pageFaults = 0;
+
+        //Initialize the output table to -1's
+        for (int row = 0; row < 1000; row++)
+        {
+            for (int column = 0; column < 1000; row++)
+            {
+                outputTable[row][column] = -1;
+            }
+        }
+
         if (algorithm == 'F' || algorithm == 'f')
         {
-            runFifoAlgorithm();
+            runFifoAlgorithm(referenceString, numOfReferences, numFrames, outputTable, pageFaults);
         }
 
         cout << endl;
@@ -176,7 +192,33 @@ int main()
 }
 
 //Step 2: Fifo Algorithm 
-void runFifoAlgorithm()
+void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int pageFaults)
 {
+    int frames[1000];
+    int nextToRemove = 0;
 
+    for (int i = 0; i < numFrames; i++)
+    {
+        frames[i] = -1;
+    }
+
+    for (int column = 0; column < numOfReferences; column++)
+    {
+        int currentPage = referenceString[column];
+        bool fault = false;
+
+        for (int row = 0; row < numFrames; row++)
+        {
+            if (frames[row] == currentPage)
+            {
+                fault = true;
+                break;
+            }
+        }
+
+        if (fault == false)
+        {
+
+        }
+    }
 }
