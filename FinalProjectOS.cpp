@@ -141,6 +141,13 @@ int main()
 
         cout << endl;
 
+        if (algorithm == 'F' || algorithm == 'f')
+        {
+            runFifoAlgorithm();
+        }
+
+        cout << endl;
+
         cout << "Repeat, Y or N? :";
         cin >> repeat;
 
@@ -153,8 +160,7 @@ int main()
     
     
 
-    //Step 2: Fifo Algorithm 
-
+ 
     //Step 3: Output
     //Step 3.a: Calculate num of page faults 
     
@@ -166,5 +172,11 @@ int main()
     //Just one space to the right of each string value
 
     return 0;
+
+}
+
+//Step 2: Fifo Algorithm 
+void runFifoAlgorithm()
+{
 
 }
