@@ -44,7 +44,7 @@ int main()
         {
             cout << endl;
             cout << "ERROR: Could not open the file named:  " << fileName << endl;
-            break;
+            return 1;
         }
 
         //Read the first line of the file and save in input
@@ -108,29 +108,35 @@ int main()
 
         cout << endl;
 
-        //Basic Validation
+        //Basic Validation for letter chosen using this if else chain
+        //If FIFO
         if (algorithm == 'F' || algorithm == 'f')
         {
             cout << "This file is marked to use the FIFO Algorithm\n";
         }
+        //If OPT
         else if (algorithm == 'O' || algorithm == 'o')
         {
             cout << "This file is marked to use the OPT Algorithm\n";
         }
+        //ALGORITHM CHOICE NOT AN OPTION FOR OUR PROGRAM!
         else
         {
             cout << "Error: Argument for Algorithm Name is not valid.\n";
             cout << "This program can only be used for the FIFO or Optimal algorithms!\n";
+            cout << "The identified argument for algorithm was: " << algorithm << endl;
 
             return 1;
         }
 
+        //Basic validation for the number of frames must be more than 0
         if (numFrames <= 0)
         {
             cout << "Error: Number of frames must be greater than 0.\n";
             return 1;
         }
 
+        //Basic validation for the # of references in the string
         if (numOfReferences == 0)
         {
             cout << "Error: Reference string not found.\n";
@@ -143,6 +149,7 @@ int main()
         cout << "Number of Frames: " << numFrames << endl;
         cout << "Reference String: ";
 
+        //Print the ref string using a simple loop
         for (int i = 0; i < numOfReferences; i++)
         {
             cout << referenceString[i] << " ";
@@ -161,14 +168,18 @@ int main()
         int pageFaults = 0;
 
         //Initialize the output table to -1's
+        //Step through rows
         for (int row = 0; row < 1000; row++)
         {
+            //Step through columns per row
             for (int column = 0; column < 1000; column++)
             {
+                //Add the -1 to every slot
                 outputTable[row][column] = -1;
             }
         }
 
+        //Call my FIFO algorithm and print functions
         if (algorithm == 'F' || algorithm == 'f')
         {
             //Run my FIFO Algorithm
@@ -178,15 +189,18 @@ int main()
 
         }
 
+        //Call Tack's OPT algorithm and the print function
         if (algorithm == 'O' || algorithm == 'o')
         {
             //Run OPT Algorithm
+
+            //Print Results
+            printResults(referenceString, numOfReferences, numFrames, outputTable, pageFaults);
         }
 
         cout << endl;
 
-        
-
+        //Get repeat choice from user
         cout << "Repeat, Y or N? :";
         cin >> repeat;
         cout << endl;
@@ -196,45 +210,60 @@ int main()
 
     cout << endl;
 
+    //Exit message
     cout << "Thank You for using our program!" << endl << "Goodbye!" << endl;
 
     return 0;
 
 }
 
-//Step 2: Fifo Algorithm 
+//Step 2: Fifo Algorithm
+//Handles my FIFO logic
 void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int& pageFaults)
 {
+    //initialize our frames to have 1000 bits of memory
     int frames[1000];
+    //keep track of the next value to replace
     int nextToRemove = 0;
 
+    //Step through and set all frames array vals to -1
     for (int i = 0; i < numFrames; i++)
     {
         frames[i] = -1;
     }
 
+    //Step over columns to the num of references in our reference string
     for (int column = 0; column < numOfReferences; column++)
     {
+        //set the current page to the corresponding value in our ref string
         int currentPage = referenceString[column];
-        bool fault = false;
+        //Set fault to true because first entry should = page fault detected
+        bool fault = true;
 
+        //Now step through the rows to see if page already in a frame
         for (int row = 0; row < numFrames; row++)
-        {
+        {   
+            //if the frame value at index row equal the currentPage
             if (frames[row] == currentPage)
             {
-                fault = true;
+                //Fault not found because page already loaded
+                fault = false;
                 break;
             }
         }
 
-        if (fault == false)
+        //If page NOT already in memory than this is a page fault
+        if (fault == true)
         {
+            //Incriment # 0f faults
             pageFaults++;
 
             int emptyFrame = -1;
 
+            //Find empty frame
             for (int row = 0; row < numFrames; row++)
             {
+                //empty if = -1
                 if (frames[row] == -1)
                 {
                     emptyFrame = row;
@@ -242,23 +271,29 @@ void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames,
                 }
             }
 
+            //If an empty frame found, place the page there
             if (emptyFrame != -1)
             {
                 frames[emptyFrame] = currentPage;
             }
             else
             {
+                //Otherwise replace oldest oage in FIFO order
                 frames[nextToRemove] = currentPage;
+
+                //move to next replacement pos
                 nextToRemove++;
 
+                //Wrap back to the beginning if the next to remove is the last frame
                 if (nextToRemove == numFrames)
                 {
                     nextToRemove = 0;
                 }
             }
-
+            //Save full frame content for this page fault col
             for (int row = 0; row < numFrames; row++)
             {
+                //Replace the -1's  with updated value
                 outputTable[row][column] = frames[row];
             }
         }
@@ -275,6 +310,7 @@ void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames,
     //Seperator is a number of dashes corresponding to the length of the input string, looks like about 6x dashes per num of input string values
     //Just one space to the right of each string value
 
+//Handles final output format
 void printResults(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int pageFaults)
 {
     cout << endl;
@@ -282,6 +318,7 @@ void printResults(int referenceString[], int numOfReferences, int numFrames, int
     //Print the reference string across the top
     for (int i = 0; i < numOfReferences; i++)
     {
+        //Found width of 3 to be ideal, print each reference string val
         cout << setw(3) << referenceString[i];
 
     }
@@ -300,10 +337,12 @@ void printResults(int referenceString[], int numOfReferences, int numFrames, int
         //Step through columns
         for (int column = 0; column < numOfReferences; column++)
         {
+            //if value in table is still -1 just put a space
             if (outputTable[row][column] == -1)
             {
                 cout << setw(3) << " ";
             }
+            //otherwise print the value in the table
             else
             {
                 cout << setw(3) << outputTable[row][column];
