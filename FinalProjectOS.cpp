@@ -10,8 +10,8 @@
 
 using namespace std;
 
-void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int pageFaults);
-
+void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int& pageFaults);
+void printResults();
 
 int main()
 {
@@ -151,7 +151,7 @@ int main()
         //Initialize the output table to -1's
         for (int row = 0; row < 1000; row++)
         {
-            for (int column = 0; column < 1000; row++)
+            for (int column = 0; column < 1000; column++)
             {
                 outputTable[row][column] = -1;
             }
@@ -159,10 +159,19 @@ int main()
 
         if (algorithm == 'F' || algorithm == 'f')
         {
+            //Run my FIFO Algorithm
             runFifoAlgorithm(referenceString, numOfReferences, numFrames, outputTable, pageFaults);
         }
 
+        if (algorithm == 'O' || algorithm == 'o')
+        {
+            //Run OPT Algorithm
+        }
+
         cout << endl;
+
+        //Print Results
+        printResults()
 
         cout << "Repeat, Y or N? :";
         cin >> repeat;
@@ -172,27 +181,12 @@ int main()
 
     cout << "Thank You for using our program!" << endl << "Goodbye!" << endl;
 
-
-    
-    
-
- 
-    //Step 3: Output
-    //Step 3.a: Calculate num of page faults 
-    
-    //Step 3.b: Display like the figure in the final project instruction.
-    //Basically show all of the input string values but only show the pages when a page fault occurs.
-   
-    //Other implementation output notes: 
-    //Seperator is a number of dashes corresponding to the length of the input string, looks like about 6x dashes per num of input string values
-    //Just one space to the right of each string value
-
     return 0;
 
 }
 
 //Step 2: Fifo Algorithm 
-void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int pageFaults)
+void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int& pageFaults)
 {
     int frames[1000];
     int nextToRemove = 0;
@@ -218,7 +212,53 @@ void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames,
 
         if (fault == false)
         {
+            pageFaults++;
 
+            int emptyFrame = -1;
+
+            for (int row = 0; row < numFrames; row++)
+            {
+                if (frames[row] == -1)
+                {
+                    emptyFrame = row;
+                    break;
+                }
+            }
+
+            if (emptyFrame != -1)
+            {
+                frames[emptyFrame] = currentPage;
+            }
+            else
+            {
+                frames[nextToRemove] = currentPage;
+                nextToRemove++;
+
+                if (nextToRemove == numFrames)
+                {
+                    nextToRemove = 0;
+                }
+            }
+
+            for (int row = 0; row < numFrames; row++)
+            {
+                outputTable[row][column] = frames[row];
+            }
         }
     }
+}
+
+//Step 3: Output
+    //Step 3.a: Calculate num of page faults 
+
+    //Step 3.b: Display like the figure in the final project instruction.
+    //Basically show all of the input string values but only show the pages when a page fault occurs.
+
+    //Other implementation output notes: 
+    //Seperator is a number of dashes corresponding to the length of the input string, looks like about 6x dashes per num of input string values
+    //Just one space to the right of each string value
+
+void printResults()
+{
+
 }
