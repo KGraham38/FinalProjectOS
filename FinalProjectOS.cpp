@@ -1,17 +1,24 @@
 //Kody Graham
 //04/05/2026
 //OS Final Project - CSCI 4300
-//I have decided to do FIFO to really be able to compare how much better optimal is compared to the worst case scenerio 
+//Kody Graham: I have decided to do FIFO to really be able to compare how much better optimal is compared to the worst case scenerio 
 
+//Only used simple standard imports
 #include <iostream>
 #include <string>
 #include <iomanip>
 #include <fstream>
 
+//Just to limit having to type std:: for every std library function call
 using namespace std;
 
-void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int& pageFaults);
-void printResults(int referenceString[], int numOfReferences, int numFrames, int outputTable[1000][1000], int pageFaults);
+//Shared result data table for both of our algorithms, had to set a max size and declare as global because since it was a local var previously it was assigning to the stack and causing overflow
+const int maxSize = 1000;
+int outputTable[maxSize][maxSize];
+
+//Initialize all 3 of our functions out side of main
+void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[maxSize][maxSize], int& pageFaults);
+void printResults(int referenceString[], int numOfReferences, int numFrames, int outputTable[maxSize][maxSize], int pageFaults);
 
 int main()
 {
@@ -21,9 +28,11 @@ int main()
     ifstream inputFile;
     string repeat = "y";
 
+    //Simple repeat loop so we dont have to relaunch our program between tests during our demo
     while (repeat == "y" || repeat == "Y")
     {
 
+        //Simple file name input
         cout << "Enter the input file name: ";
         cin >> fileName;
 
@@ -33,8 +42,9 @@ int main()
         //Make sure file is open
         if (!inputFile)
         {
-            cout << "ERROR: Could not open the file " << fileName << endl;
-            return 1;
+            cout << endl;
+            cout << "ERROR: Could not open the file named:  " << fileName << endl;
+            break;
         }
 
         //Read the first line of the file and save in input
@@ -43,14 +53,15 @@ int main()
         //Close the file
         inputFile.close();
 
-        //Store the arguments
+        //Store the 3 arguments
         string argumentsArray[1000];
         int argCount = 0;
         string currentArg = "";
 
-        //Split the input based on the commas
+        //Split our input based on the commas
         for (int i = 0; i < input.length(); i++)
         {
+            //if , store next arg
             if (input[i] == ',')
             {
                 argumentsArray[argCount] = currentArg;
@@ -94,6 +105,8 @@ int main()
             referenceString[numOfReferences] = stoi(argumentsArray[i]);
             numOfReferences++;
         }
+
+        cout << endl;
 
         //Basic Validation
         if (algorithm == 'F' || algorithm == 'f')
@@ -139,13 +152,12 @@ int main()
         //Split info section from real output section       
         for (int i = 0; i < numOfReferences; i++)
         {
-            cout << "____";
+            cout << "___";
         }
 
         cout << endl;
 
         //Shared result data table
-        int outputTable[1000][1000];
         int pageFaults = 0;
 
         //Initialize the output table to -1's
@@ -177,9 +189,12 @@ int main()
 
         cout << "Repeat, Y or N? :";
         cin >> repeat;
+        cout << endl;
 
 
     }
+
+    cout << endl;
 
     cout << "Thank You for using our program!" << endl << "Goodbye!" << endl;
 
@@ -275,12 +290,27 @@ void printResults(int referenceString[], int numOfReferences, int numFrames, int
     //Separator line
     for (int i = 0; i < numOfReferences; i++)
     {
-        cout << "_____";
+        cout << "___";
     }
     cout << endl;
 
-    //Print our resultant frame table
-
+    //Print our resultant frame table, fairly simple just stepping through the 2d array and only printing ig there was a page fault in the given column
+    for (int row = 0; row < numFrames; row++)
+    {
+        //Step through columns
+        for (int column = 0; column < numOfReferences; column++)
+        {
+            if (outputTable[row][column] == -1)
+            {
+                cout << setw(3) << " ";
+            }
+            else
+            {
+                cout << setw(3) << outputTable[row][column];
+            }
+        }
+        cout << endl;
+    }
 
     //Print number of page faults
     cout << endl;
