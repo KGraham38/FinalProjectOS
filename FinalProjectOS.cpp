@@ -159,9 +159,9 @@ int main()
         cout << endl;
 
         //Split info section from real output section       
-        for (int i = 0; i < numOfReferences; i++)
+        for (int i = 0; i < numOfReferences-1; i++)
         {
-            cout << "___";
+            cout << "____";
         }
 
         cout << endl;
