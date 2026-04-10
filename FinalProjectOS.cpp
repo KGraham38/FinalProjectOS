@@ -2,6 +2,7 @@
 //04/05/2026
 //OS Final Project - CSCI 4300
 //Kody Graham: I have decided to do FIFO to really be able to compare how much better optimal is compared to the worst case scenerio 
+//Pranaya Pudasaini: Implemented the OPT or Optimal Page Replacement Algorithm
 
 //Only used simple standard imports
 #include <iostream>
@@ -18,6 +19,7 @@ int outputTable[maxSize][maxSize];
 
 //Initialize all 3 of our functions out side of main
 void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[maxSize][maxSize], int& pageFaults);
+void runOPTAlgorithm(int referenceString[], int numOfReferences, int numFrames, int outputTable[maxSize][maxSize], int& pageFaults);
 void printResults(int referenceString[], int numOfReferences, int numFrames, int outputTable[maxSize][maxSize], int pageFaults);
 
 int main()
@@ -192,10 +194,22 @@ int main()
         //Call Tack's OPT algorithm and the print function
         if (algorithm == 'O' || algorithm == 'o')
         {
-            //Run OPT Algorithm
+            // RESET output table BEFORE running OPT
+            for (int i = 0; i < 1000; i++)
+            {
+                for (int j = 0; j < 1000; j++)
+                {
+                    outputTable[i][j] = -1;
+                }
+            }
 
-            //Print Results
-            printResults(referenceString, numOfReferences, numFrames, outputTable, pageFaults);
+            // RESET page faults
+            pageFaults = 0;
+
+            // Run OPT
+            runOPTAlgorithm(referenceString, numOfReferences, numFrames, outputTable, pageFaults);
+            // Print results
+             printResults(referenceString, numOfReferences, numFrames, outputTable, pageFaults);
         }
 
         cout << endl;
@@ -300,7 +314,94 @@ void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames,
     }
 }
 
-//Step 3: Output
+//Step 3: Optimum Page algorithm
+void runOPTAlgorithm(int referenceString[], int numOfReferences, int numFrames,
+                     int outputTable[1000][1000], int& pageFaults)
+{
+    int frames[1000];
+
+    for (int i = 0; i < numFrames; i++)
+    {
+        frames[i] = -1;
+    }
+
+    for (int column = 0; column < numOfReferences; column++)
+    {
+        int currentPage = referenceString[column];
+        bool fault = true;
+
+        // Check HIT
+        for (int row = 0; row < numFrames; row++)
+        {
+            if (frames[row] == currentPage)
+            {
+                fault = false;
+                break;
+            }
+        }
+
+        if (fault)
+        {
+            pageFaults++;
+
+            int emptyFrame = -1;
+
+            for (int row = 0; row < numFrames; row++)
+            {
+                if (frames[row] == -1)
+                {
+                    emptyFrame = row;
+                    break;
+                }
+            }
+
+            if (emptyFrame != -1)
+            {
+                frames[emptyFrame] = currentPage;
+            }
+            else
+            {
+                int replaceIndex = 0;
+                int farthestUse = -1;
+
+                for (int row = 0; row < numFrames; row++)
+                {
+                    int nextUse = -1;
+
+                    for (int k = column + 1; k < numOfReferences; k++)
+                    {
+                        if (frames[row] == referenceString[k])
+                        {
+                            nextUse = k;
+                            break;
+                        }
+                    }
+
+                    if (nextUse == -1)
+                    {
+                        replaceIndex = row;
+                        break;
+                    }
+
+                    // Track farthest future use
+                    if (nextUse > farthestUse)
+                    {
+                        farthestUse = nextUse;
+                        replaceIndex = row;
+                    }
+                }
+
+                frames[replaceIndex] = currentPage;
+            }
+        }
+
+        for (int row = 0; row < numFrames; row++)
+        {
+            outputTable[row][column] = frames[row];
+        }
+    }
+}
+//Step 4: Output
     //Step 3.a: Calculate num of page faults 
 
     //Step 3.b: Display like the figure in the final project instruction.
