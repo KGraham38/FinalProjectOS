@@ -393,11 +393,11 @@ void runOPTAlgorithm(int referenceString[], int numOfReferences, int numFrames,
 
                 frames[replaceIndex] = currentPage;
             }
-        }
 
-        for (int row = 0; row < numFrames; row++)
-        {
-            outputTable[row][column] = frames[row];
+            for (int row = 0; row < numFrames; row++)
+            {
+                outputTable[row][column] = frames[row];
+            }
         }
     }
 }
