@@ -314,38 +314,42 @@ void runFifoAlgorithm(int referenceString[], int numOfReferences, int numFrames,
     }
 }
 
-//Step 3: Optimum Page algorithm
+// Step 3: Optimum Page Replacement Algorithm
 void runOPTAlgorithm(int referenceString[], int numOfReferences, int numFrames,
                      int outputTable[1000][1000], int& pageFaults)
 {
-    int frames[1000];
+    int frames[1000]; // Array to store current pages in frames
 
+    // Initialize all frames as empty (-1 means empty)
     for (int i = 0; i < numFrames; i++)
     {
         frames[i] = -1;
     }
 
+    // Loop through each page reference
     for (int column = 0; column < numOfReferences; column++)
     {
-        int currentPage = referenceString[column];
-        bool fault = true;
+        int currentPage = referenceString[column]; // Current page being accessed
+        bool fault = true; // Assume it is a page fault
 
-        // Check HIT
+        // Check if current page is already in frames (HIT)
         for (int row = 0; row < numFrames; row++)
         {
             if (frames[row] == currentPage)
             {
-                fault = false;
+                fault = false; // Page found → no fault
                 break;
             }
         }
 
+        // If page is NOT in frames → PAGE FAULT
         if (fault)
         {
-            pageFaults++;
+            pageFaults++; // Increment page fault count
 
             int emptyFrame = -1;
 
+            // Check if there is an empty frame available
             for (int row = 0; row < numFrames; row++)
             {
                 if (frames[row] == -1)
@@ -355,35 +359,40 @@ void runOPTAlgorithm(int referenceString[], int numOfReferences, int numFrames,
                 }
             }
 
+            // If empty frame exists → place page there
             if (emptyFrame != -1)
             {
                 frames[emptyFrame] = currentPage;
             }
             else
             {
+                // No empty frame → apply OPTIMAL replacement
                 int replaceIndex = 0;
                 int farthestUse = -1;
 
+                // Find the page that will be used farthest in the future
                 for (int row = 0; row < numFrames; row++)
                 {
                     int nextUse = -1;
 
+                    // Look ahead in reference string
                     for (int k = column + 1; k < numOfReferences; k++)
                     {
                         if (frames[row] == referenceString[k])
                         {
-                            nextUse = k;
+                            nextUse = k; // Found next use
                             break;
                         }
                     }
 
+                    // If page is NEVER used again → replace it immediately
                     if (nextUse == -1)
                     {
                         replaceIndex = row;
                         break;
                     }
 
-                    // Track farthest future use
+                    // Otherwise, track the page used farthest in the future
                     if (nextUse > farthestUse)
                     {
                         farthestUse = nextUse;
@@ -391,9 +400,11 @@ void runOPTAlgorithm(int referenceString[], int numOfReferences, int numFrames,
                     }
                 }
 
+                // Replace the chosen page
                 frames[replaceIndex] = currentPage;
             }
 
+            // Store current frame state in output table
             for (int row = 0; row < numFrames; row++)
             {
                 outputTable[row][column] = frames[row];
@@ -401,6 +412,8 @@ void runOPTAlgorithm(int referenceString[], int numOfReferences, int numFrames,
         }
     }
 }
+
+
 //Step 4: Output
     //Step 3.a: Calculate num of page faults 
 
